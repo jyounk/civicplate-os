@@ -13,91 +13,93 @@ export default async function TenantHomePage({ params }: Props) {
   const tenantName = tenant.name
   const tenantNameUpper = tenant.name.toUpperCase()
   const templates = tenant.tenantTemplates
+  const heroBg = 'linear-gradient(135deg, ' + primary + ' 0%, ' + primary + 'cc 100%)'
+  const stepIconBg = primary + '18'
+  const cardImgBg = 'linear-gradient(135deg, #f7f5f0 0%, #eeeae2 100%)'
+  const plateBorder = '3px solid ' + secondary + '44'
+  const iconStyle = { width: '36px', height: '36px', borderRadius: '10px', backgroundColor: stepIconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 as const }
+  const stepTitleStyle = { margin: 0, fontWeight: '700', fontSize: '0.9rem', color: '#1a1a1a' }
+  const stepSubStyle = { margin: '2px 0 0', fontSize: '0.8rem', color: '#888', lineHeight: '1.4' }
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f4f6f9', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#fafaf8', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <style>{`
-        .cp-hero { padding: 2.5rem 1.25rem; }
-        .cp-hero-inner { max-width: 860px; margin: 0 auto; }
-        .cp-steps { background: #fff; border-bottom: 1px solid #e2e6ea; }
-        .cp-steps-inner { max-width: 860px; margin: 0 auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
-        .cp-step { display: flex; align-items: flex-start; gap: 0.75rem; }
-        .cp-step-divider { display: none; }
-        .cp-cards-outer { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem; }
+        * { box-sizing: border-box; }
+        .cp-hero { padding: 3rem 1.5rem 2.5rem; }
+        .cp-hero-inner { max-width: 880px; margin: 0 auto; }
+        .cp-steps-outer { padding: 0 1.5rem; margin-top: -1.25rem; margin-bottom: 0.5rem; }
+        .cp-steps-inner { max-width: 880px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+        .cp-step-card { background: #ffffff; border-radius: 14px; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #f0ede8; }
+        .cp-cards-outer { max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem; }
         .cp-cards-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
-        .cp-footer-inner { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.25rem; }
+        .cp-card { background: #ffffff; border-radius: 18px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #f0ede8; display: flex; flex-direction: column; transition: box-shadow 0.2s, transform 0.2s; }
+        .cp-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.12); transform: translateY(-2px); }
+        .cp-cta { display: inline-flex; align-items: center; gap: 6px; padding: 0.65rem 1.25rem; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: opacity 0.15s; }
+        .cp-cta:hover { opacity: 0.88; }
+        .cp-footer { border-top: 1px solid #f0ede8; background: #ffffff; padding: 1.5rem; }
+        .cp-footer-inner { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 0.25rem; align-items: center; text-align: center; }
         @media (min-width: 640px) {
-          .cp-hero { padding: 3rem 2rem; }
-          .cp-steps-inner { flex-direction: row; padding: 1.5rem 2rem; }
-          .cp-step-divider { display: block; width: 1px; background: #e2e6ea; align-self: stretch; margin: 0 1rem; }
-          .cp-cards-outer { padding: 2.5rem 2rem; }
-          .cp-cards-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-          .cp-footer-inner { flex-direction: row; justify-content: space-between; align-items: center; }
+          .cp-hero { padding: 4rem 2rem 3rem; }
+          .cp-steps-outer { padding: 0 2rem; }
+          .cp-steps-inner { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+          .cp-cards-outer { padding: 3rem 2rem; }
+          .cp-cards-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+          .cp-footer-inner { flex-direction: row; justify-content: space-between; text-align: left; }
         }
       `}</style>
 
-      {/* HERO */}
-      <div className='cp-hero' style={{ backgroundColor: primary }}>
+      <div className='cp-hero' style={{ background: heroBg }}>
         <div className='cp-hero-inner'>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '50%', backgroundColor: secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke={primary} strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-                <rect x='2' y='7' width='20' height='10' rx='2'/>
-                <circle cx='6' cy='12' r='1' fill={primary}/>
-                <circle cx='18' cy='12' r='1' fill={primary}/>
-                <line x1='9' y1='12' x2='15' y2='12'/>
-              </svg>
-            </div>
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', color: secondary, lineHeight: '1.1' }}>{tenantName}</h1>
-              <p style={{ margin: '0.25rem 0 0', color: secondary, opacity: 0.75, fontSize: '0.9rem' }}>License Plate Customization Portal</p>
-            </div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '100px', padding: '6px 14px', marginBottom: '1.25rem' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: secondary }} />
+            <span style={{ fontSize: '0.78rem', fontWeight: '600', color: secondary, letterSpacing: '0.05em' }}>{tenantNameUpper}</span>
           </div>
-          <p style={{ margin: 0, color: secondary, opacity: 0.7, fontSize: '0.9rem', maxWidth: '520px' }}>Design and submit your custom license plate request online. Orders are reviewed and approved by city staff.</p>
+          <h1 style={{ margin: '0 0 0.75rem', fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: '800', color: secondary, lineHeight: '1.1' }}>Design Your Custom Plate</h1>
+          <p style={{ margin: '0', color: secondary, opacity: 0.8, fontSize: '1.05rem', maxWidth: '480px', lineHeight: '1.6' }}>Choose a style, personalize your text, and submit your request in just a few minutes.</p>
         </div>
       </div>
 
-      {/* HOW IT WORKS */}
-      <div className='cp-steps'>
+      <div className='cp-steps-outer'>
         <div className='cp-steps-inner'>
-          <div className='cp-step'>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: primary, color: secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '700', flexShrink: 0 }}>1</div>
-            <div><p style={{ margin: 0, fontWeight: '600', fontSize: '0.875rem', color: '#1a202c' }}>Choose a template</p><p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#718096' }}>Pick the plate style that suits you</p></div>
+          <div className='cp-step-card'>
+            <div style={iconStyle}><span style={{ fontSize: '1.1rem' }}>🎨</span></div>
+            <div><p style={stepTitleStyle}>Pick a style</p><p style={stepSubStyle}>Choose from available templates</p></div>
           </div>
-          <div className='cp-step-divider' />
-          <div className='cp-step'>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: primary, color: secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '700', flexShrink: 0 }}>2</div>
-            <div><p style={{ margin: 0, fontWeight: '600', fontSize: '0.875rem', color: '#1a202c' }}>Customize your text</p><p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#718096' }}>Enter your plate number and options</p></div>
+          <div className='cp-step-card'>
+            <div style={iconStyle}><span style={{ fontSize: '1.1rem' }}>✏️</span></div>
+            <div><p style={stepTitleStyle}>Personalize it</p><p style={stepSubStyle}>Type in your plate text and preview it live</p></div>
           </div>
-          <div className='cp-step-divider' />
-          <div className='cp-step'>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: primary, color: secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '700', flexShrink: 0 }}>3</div>
-            <div><p style={{ margin: 0, fontWeight: '600', fontSize: '0.875rem', color: '#1a202c' }}>Submit for approval</p><p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: '#718096' }}>City staff reviews within 2-3 business days</p></div>
+          <div className='cp-step-card'>
+            <div style={iconStyle}><span style={{ fontSize: '1.1rem' }}>📬</span></div>
+    <div><p style={stepTitleStyle}>Submit your request</p><p style={stepSubStyle}>City staff reviews within 2-3 business days</p></div>
           </div>
         </div>
       </div>
 
-      {/* TEMPLATE CARDS */}
       <div className='cp-cards-outer'>
-        <h2 style={{ margin: '0 0 1.5rem', fontSize: '1.1rem', fontWeight: '600', color: '#1a202c' }}>Available Plate Templates</h2>
+        <h2 style={{ margin: '0 0 0.4rem', fontSize: '1.2rem', fontWeight: '700', color: '#1a1a1a' }}>Available Plates</h2>
+        <p style={{ margin: '0 0 1.75rem', fontSize: '0.88rem', color: '#888' }}>Tap any plate to start customizing</p>
         <div className='cp-cards-grid'>
           {templates.map((template) => {
             const href = '/' + slug + '/design/' + template.id
             return (
-              <div key={template.id} style={{ backgroundColor: '#ffffff', border: '1px solid #e2e6ea', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e6ea', padding: '1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <div style={{ width: '160px', height: '80px', backgroundColor: '#ffffff', border: '3px solid ' + primary, borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e0', position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#cbd5e0', position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <span style={{ fontSize: '1.1rem', fontWeight: '800', color: primary, letterSpacing: '0.15em', fontFamily: 'monospace' }}>ABC 123</span>
-                    <span style={{ fontSize: '0.55rem', fontWeight: '600', color: primary, letterSpacing: '0.1em', marginTop: '4px', opacity: 0.7 }}>{tenantNameUpper}</span>
+              <div key={template.id} className='cp-card'>
+                <div style={{ background: cardImgBg, padding: '2rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: '180px', height: '90px', backgroundColor: primary, borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 4px 16px rgba(0,0,0,0.18)', border: plateBorder }}>
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: secondary, opacity: 0.4, position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: secondary, opacity: 0.4, position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <span style={{ fontSize: '1.25rem', fontWeight: '900', color: secondary, letterSpacing: '0.15em', fontFamily: 'Arial Black, Arial, sans-serif' }}>ABC 123</span>
+                    <span style={{ fontSize: '0.55rem', fontWeight: '700', color: secondary, letterSpacing: '0.12em', marginTop: '5px', opacity: 0.7 }}>{tenantNameUpper}</span>
                   </div>
                 </div>
-                <div style={{ padding: '1.25rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <h3 style={{ margin: '0 0 0.4rem', fontSize: '1rem', fontWeight: '600', color: '#1a202c' }}>{template.name}</h3>
-                  <p style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#718096', lineHeight: '1.5', flex: 1 }}>{template.baseTemplate.description}</p>
+                <div style={{ padding: '1.4rem 1.5rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', fontWeight: '700', color: '#1a1a1a' }}>{template.name}</h3>
+                  <p style={{ margin: '0 0 1.25rem', fontSize: '0.85rem', color: '#888', lineHeight: '1.55', flex: 1 }}>{template.baseTemplate.description}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><span style={{ fontSize: '1.3rem', fontWeight: '700', color: primary }}>${template.price.toFixed(2)}</span><span style={{ fontSize: '0.8rem', color: '#a0aec0', marginLeft: '4px' }}>/ plate</span></div>
-                    <a href={href} style={{ backgroundColor: primary, color: secondary, padding: '0.55rem 1.1rem', borderRadius: '6px', fontWeight: '600', textDecoration: 'none', fontSize: '0.875rem' }}>Customize &rarr;</a>
+                    <div>
+                      <span style={{ fontSize: '1.5rem', fontWeight: '800', color: '#1a1a1a' }}>${template.price.toFixed(2)}</span>
+                      <span style={{ fontSize: '0.78rem', color: '#aaa', marginLeft: '4px' }}>/ plate</span>
+                    </div>
+                    <a href={href} className='cp-cta' style={{ backgroundColor: primary, color: secondary }}>Customize</a>
                   </div>
                 </div>
               </div>
@@ -106,11 +108,10 @@ export default async function TenantHomePage({ params }: Props) {
         </div>
       </div>
 
-      {/* FOOTER */}
-      <div style={{ borderTop: '1px solid #e2e6ea', backgroundColor: '#ffffff', padding: '1.25rem' }}>
+      <div className='cp-footer'>
         <div className='cp-footer-inner'>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: '#a0aec0' }}>{tenantName} — Powered by CivicPlate OS</p>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: '#a0aec0' }}>Questions? Contact your city office.</p>
+          <p style={{ margin: 0, fontSize: '0.78rem', color: '#bbb' }}>Powered by <strong style={{ color: '#999' }}>CivicPlate OS</strong></p>
+          <p style={{ margin: 0, fontSize: '0.78rem', color: '#bbb' }}>Questions? Contact your city office.</p>
         </div>
       </div>
     </div>
