@@ -13,9 +13,9 @@ type Template = {
   overrideColors: { background?: string; text?: string; border?: string } | null
 }
 type Tenant = { slug: string; name: string; primaryColor: string; secondaryColor: string; entityId: string }
-type Props = { template: Template; ruleSets: RuleSet[]; tenant: Tenant }
+type Props = { template: Template; ruleSets: RuleSet[]; tenant: Tenant; price: number }
 
-export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
+export default function PlateDesigner({ template, ruleSets, tenant, price }: Props) {
   const getDefaultValue = (zone: TextZone): string => {
     if (template.overrideTextZones) {
       const override = template.overrideTextZones.find((o) => o.id === zone.id)
@@ -35,6 +35,8 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
   const bgColor = template.overrideColors?.background ?? tenant.primaryColor
   const textColor = template.overrideColors?.text ?? tenant.secondaryColor
   const borderColor = template.overrideColors?.border ?? tenant.secondaryColor
+  const priceInCents = Math.round(price * 100)
+  const priceLabel = '$' + price.toFixed(2)
   const handleChange = useCallback((zoneId: string, value: string) => {
     const upper = value.toUpperCase()
     setZoneValues((prev) => ({ ...prev, [zoneId]: upper }))
@@ -59,7 +61,7 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
           tenantSlug: tenant.slug,
           customerName,
           customerEmail,
-          amount: 2500,
+          amount: priceInCents,
           designData: {
             tenantTemplateId: template.id,
             entityId: tenant.entityId,
@@ -84,11 +86,12 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
   }
   const canSubmit = isValid && mainValue.length > 0
   const canSend = !!customerName && !!customerEmail && !submitting
+  const payLabel = submitting ? 'Redirecting to payment...' : 'Pay Now — ' + priceLabel
   return (
     <div style={{ marginTop: '1rem' }}>
       <style>{`
         .pd-svg-wrap { background: #f5f5f5; border-radius: 12px; padding: 1.25rem; display: flex; justify-content: center; margin-bottom: 1.5rem; }
-        .pd-svg-wrap svg { width: 100%; max-width: 540px; height: auto; border-radius: 12px; border: 6px solid; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+        .pd-svg-wrap svg { width: 100%; max-width: 540px; height: auto; border-radius: 12px; border: 6px solid; box-adow: 0 8px 32px rgba(0,0,0,0.18); }
         .pd-card { background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid #e5e7eb; margin-bottom: 1.25rem; }
         .pd-submit-row { display: flex; gap: 0.75rem; }
         .pd-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box; color: #1a202c; }
@@ -156,7 +159,7 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
           )}
           <div className='pd-submit-row'>
             <button onClick={() => setShowForm(false)} style={{ flex: 1, padding: '1rem', backgroundColor: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>Back</button>
-            <button disabled={!canSend} onClick={handleSubmit} style={{ flex: 2, padding: '1rem', backgroundColor: canSend ? tenant.primaryColor : '#9ca3af', color: tenant.secondaryColor, border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: canSend ? 'pointer' : 'not-allowed', transition: 'background-color 0.15s' }}>{submitting ? 'Redirecting to payment...' : 'Pay Now — $25.00'}</button>
+            <button disabled={!canSend} onClick={handleSubmit} style={{ flex: 2, padding: '1rem', backgroundColor: canSend ? tenant.primaryColor : '#9ca3af', color: tenant.secondaryColor, border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: canSend ? 'pointer' : 'not-allowed', transition: 'background-color 0.15s' }}>{payLabel}</button>
           </div>
           <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>You will be redirected to Stripe to complete your payment securely.</p>
         </div>

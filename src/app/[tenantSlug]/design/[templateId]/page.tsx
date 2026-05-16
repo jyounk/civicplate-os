@@ -18,6 +18,7 @@ export default async function DesignPage({ params }: Props) {
   const secondary = tenant.secondaryColor
   const backHref = '/' + tenant.slug
   const tenantName = tenant.name
+  const templatePrice = Number(template.price)
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f4f6f9', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <style>{`
@@ -53,7 +54,7 @@ export default async function DesignPage({ params }: Props) {
             <p style={{ margin: '0.25rem 0 0', color: secondary, opacity: 0.7, fontSize: '0.85rem' }}>{template.baseTemplate.description}</p>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <span style={{ fontSize: '1.4rem', fontWeight: '700', color: secondary }}>${template.price.toFixed(2)}</span>
+            <span style={{ fontSize: '1.4rem', fontWeight: '700', color: secondary }}>${templatePrice.toFixed(2)}</span>
             <p style={{ margin: '0.1rem 0 0', color: secondary, opacity: 0.6, fontSize: '0.72rem' }}>per plate</p>
           </div>
         </div>
@@ -84,6 +85,7 @@ export default async function DesignPage({ params }: Props) {
             secondaryColor: tenant.secondaryColor,
             entityId: tenant.id,
           }}
+          price={templatePrice}
         />
       </div>
 
