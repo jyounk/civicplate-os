@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { validatePlateText, RuleSet, ValidationResult } from './rules'
+import GeorgiaPlate from './GeorgiaPlate'
 
 type TextZone = {
   id: string; label: string; x: number; y: number; width: number; height: number
@@ -32,9 +33,6 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
   const [error, setError] = useState<string | null>(null)
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
-  const bgColor = template.overrideColors?.background ?? tenant.primaryColor
-  const textColor = template.overrideColors?.text ?? tenant.secondaryColor
-  const borderColor = template.overrideColors?.border ?? tenant.secondaryColor
   const priceInCents = Math.round(price * 100)
   const priceLabel = '$' + price.toFixed(2)
   const handleChange = useCallback((zoneId: string, value: string) => {
@@ -87,34 +85,19 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
   const canSubmit = isValid && mainValue.length > 0
   const canSend = !!customerName && !!customerEmail && !submitting
   const payLabel = submitting ? 'Redirecting to payment...' : 'Pay Now — ' + priceLabel
+  const countyName = tenant.name
   return (
     <div style={{ marginTop: '1rem' }}>
       <style>{`
-        .pd-svg-wrap { background: #f5f5f5; border-radius: 12px; padding: 1.25rem; display: flex; justify-content: center; margin-bottom: 1.5rem; }
-        .pd-svg-wrap svg { width: 100%; max-width: 540px; height: auto; border-radius: 12px; border: 6px solid; box-adow: 0 8px 32px rgba(0,0,0,0.18); }
+        .pd-svg-wrap { background: #f0f0f0; border-radius: 12px; padding: 1.25rem; display: flex; justify-content: center; margin-bottom: 1.5rem; }
         .pd-card { background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid #e5e7eb; margin-bottom: 1.25rem; }
         .pd-submit-row { display: flex; gap: 0.75rem; }
         .pd-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box; color: #1a202c; }
-        .pd-plate-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; }
+        .pd-ple-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; }
       `}</style>
 
       <div className='pd-svg-wrap'>
-        <svg viewBox={'0 0 ' + template.width + ' ' + template.height} style={{ borderColor: borderColor }}>
-          <rect x={0} y={0} width={template.width} height={template.height} fill={bgColor} />
-          <rect x={16} y={16} width={template.width - 32} height={template.height - 32} fill='none' stroke={borderColor} strokeWidth={4} opacity={0.4} rx={8} />
-          <circle cx={60} cy={template.height / 2} r={14} fill={borderColor} opacity={0.3} />
-          <circle cx={template.width - 60} cy={template.height / 2} r={14} fill={borderColor} opacity={0.3} />
-          {template.textZones.map((zone) => {
-            const value = zoneValues[zone.id] ?? ''
-            const textAnchor = zone.align === 'center' ? 'middle' : zone.align === 'right' ? 'end' : 'start'
-            const xPos = zone.align === 'center' ? zone.x + zone.width / 2 : zone.align === 'right' ? zone.x + zone.width : zone.x
-            return (
-              <text key={zone.id} x={xPos} y={zone.y + zone.height / 2} textAnchor={textAnchor} dominantBaseline='central' fill={textColor} fontSize={zone.fontSize} fontWeight={zone.fontWeight} fontFamily='Arial Black, Arial, sans-serif' letterSpacing={zone.id === 'main-text' ? '0.08em' : '0.02em'}>
-                {value || (zone.id === 'main-text' ? 'ABC 123' : zone.label)}
-              </text>
-            )
-          })}
-        </svg>
+        <GeorgiaPlate plateText={mainValue} countyName={countyName} width={template.width} height={template.height} />
       </div>
 
       <div className='pd-card'>
