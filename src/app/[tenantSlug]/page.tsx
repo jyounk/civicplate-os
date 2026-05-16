@@ -49,7 +49,7 @@ export default async function TenantHomePage({ params }: Props) {
             </div>
             <div>
               <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: '700', color: secondary, lineHeight: '1.1' }}>{tenantName}</h1>
-              <p style={{ margin: '0.25rem 0 0', color: secondary, opacity: 0.75, fontSize: '0.9rem' }}>License Plate Customization Portal - Beta</p>
+              <p style={{ margin: '0.25rem 0 0', color: secondary, opacity: 0.75, fontSize: '0.9rem' }}>License Plate Customization Portal</p>
             </div>
           </div>
           <p style={{ margin: 0, color: secondary, opacity: 0.7, fontSize: '0.9rem', maxWidth: '520px' }}>Design and submit your custom license plate request online. Orders are reviewed and approved by city staff.</p>
