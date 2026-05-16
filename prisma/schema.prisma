@@ -132,6 +132,7 @@ model Order {
   status          OrderStatus @default(SUBMITTED)
   customerName    String
   customerEmail   String
+  stripeSessionId String?
   pdfUrl          String?
   notificationLog Json        @default("[]")
   submittedAt     DateTime    @default(now())

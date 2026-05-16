@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react'
 import { validatePlateText, RuleSet, ValidationResult } from './rules'
-import { submitPlateOrder } from '@/lib/actions'
 
 type TextZone = {
   id: string; label: string; x: number; y: number; width: number; height: number
@@ -30,6 +29,7 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
   const [validations, setValidations] = useState<Record<string, ValidationResult>>({})
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
   const bgColor = template.overrideColors?.background ?? tenant.primaryColor
@@ -49,17 +49,38 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
   const handleSubmit = async () => {
     if (!customerName || !customerEmail) return
     setSubmitting(true)
-    const formData = new FormData()
-    formData.append('tenantTemplateId', template.id)
-    formData.append('entityId', tenant.entityId)
-    formData.append('entitySlug', tenant.slug)
-    formData.append('customerName', customerName)
-    formData.append('customerEmail', customerEmail)
-    formData.append('cityName', tenant.name)
-    formData.append('plateText', mainValue)
-    const placements = template.textZones.map((z) => ({ zoneId: z.id, value: zoneValues[z.id] ?? '' }))
-    formData.append('zonePlacements', JSON.stringify(placements))
-    await submitPlateOrder(formData)
+    setError(null)
+    try {
+      const placements = template.textZones.map((z) => ({ zoneId: z.id, value: zoneValues[z.id] ?? '' }))
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantSlug: tenant.slug,
+          customerName,
+          customerEmail,
+          amount: 2500,
+          designData: {
+            tenantTemplateId: template.id,
+            entityId: tenant.entityId,
+            entitySlug: tenant.slug,
+            cityName: tenant.name,
+            plateText: mainValue,
+            zonePlacements: placements,
+          },
+        }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        setError(data.error || 'Something went wrong. Please try again.')
+        setSubmitting(false)
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
+      setSubmitting(false)
+    }
   }
   const canSubmit = isValid && mainValue.length > 0
   const canSend = !!customerName && !!customerEmail && !submitting
@@ -77,7 +98,7 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
       <div className='pd-svg-wrap'>
         <svg viewBox={'0 0 ' + template.width + ' ' + template.height} style={{ borderColor: borderColor }}>
           <rect x={0} y={0} width={template.width} height={template.height} fill={bgColor} />
-        <rect x={16} y={16} width={template.width - 32} height={template.height - 32} fill='none' stroke={borderColor} strokeWidth={4} opacity={0.4} rx={8} />
+          <rect x={16} y={16} width={template.width - 32} height={template.height - 32} fill='none' stroke={borderColor} strokeWidth={4} opacity={0.4} rx={8} />
           <circle cx={60} cy={template.height / 2} r={14} fill={borderColor} opacity={0.3} />
           <circle cx={template.width - 60} cy={template.height / 2} r={14} fill={borderColor} opacity={0.3} />
           {template.textZones.map((zone) => {
@@ -130,10 +151,14 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 'bold', color: '#444', marginBottom: '0.4rem' }}>Email Address</label>
             <input type='email' value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder='jane@example.com' className='pd-input' />
           </div>
+          {error && (
+            <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', fontSize: '0.875rem' }}>{error}</div>
+          )}
           <div className='pd-submit-row'>
             <button onClick={() => setShowForm(false)} style={{ flex: 1, padding: '1rem', backgroundColor: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}>Back</button>
-            <button disabled={!canSend} onClick={handleSubmit} style={{ flex: 2, padding: '1rem', backgroundColor: canSend ? tenant.primaryColor : '#9ca3af', color: tenant.secondaryColor, border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: canSend ? 'pointer' : 'not-allowed', transition: 'background-color 0.15s' }}>{submitting ? 'Submitting...' : 'Submit Plate Request'}</button>
+            <button disabled={!canSend} onClick={handleSubmit} style={{ flex: 2, padding: '1rem', backgroundColor: canSend ? tenant.primaryColor : '#9ca3af', color: tenant.secondaryColor, border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: canSend ? 'pointer' : 'not-allowed', transition: 'background-color 0.15s' }}>{submitting ? 'Redirecting to payment...' : 'Pay Now — $25.00'}</button>
           </div>
+          <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#9ca3af', textAlign: 'center' }}>You will be redirected to Stripe to complete your payment securely.</p>
         </div>
       )}
       <div style={{ height: '2rem' }} />
