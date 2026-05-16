@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================
+// TENANT / ENTITY
+// ============================
+
+model GovernmentEntity {
+  id                  String           @id @default(cuid())
+  name                String
+  slug                String           @unique
+  logoUrl             String?
+  primaryColor        String           @default("#000000")
+  secondaryColor      String           @default("#ffffff")
+  fulfillmentMode     FulfillmentMode  @default(INTERNAL)
+  requireCitizenAuth  Boolean          @default(false)
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  users               User[]
+  tenantTemplates     TenantTemplate[]
+  orders              Order[]
+}
+
+// ============================
+// USERS / AUTH
+// ============================
+
+model User {
+  id        String    @id @default(cuid())
+  entityId  String?
+  email     String    @unique
+  name      String?
+  role      UserRole  @default(ENTITY_ADMIN)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  entity    GovernmentEntity? @relation(fields: [entityId], references: [id])
+  auditLogs AuditLog[]
+}
+
+// ============================
+// TEMPLATES
+// ============================
+
+model BaseTemplate {
+  id                  String           @id @default(cuid())
+  name                String
+  description         String?
+  backgroundImageUrl  String?
+  width               Int              @default(1200)
+  height              Int              @default(600)
+  textZones           Json             @default("[]")
+  safeZones           Json             @default("[]")
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  tenantTemplates     TenantTemplate[]
+}
+
+model TenantTemplate {
+  id                  String           @id @default(cuid())
+  entityId            String
+  baseTemplateId      String
+  name                String
+  overrideImageUrl    String?
+  overrideTextZones   Json?
+  overrideColors      Json?
+  price               Decimal          @default(0) @db.Decimal(10, 2)
+  isActive            Boolean          @default(true)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  entity              GovernmentEntity @relation(fields: [entityId], references: [id])
+  baseTemplate        BaseTemplate     @relation(fields: [baseTemplateId], references: [id])
+  ruleSets            RuleSet[]
+  designs             Design[]
+}
+
+// ============================
+// RULES ENGINE
+// ============================
+
+model RuleSet {
+  id                  String         @id @default(cuid())
+  tenantTemplateId    String
+  minChars            Int            @default(1)
+  maxChars            Int            @default(7)
+  allowedPattern      String?
+  bannedTerms         Json           @default("[]")
+  profanityFilter     Boolean        @default(true)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  tenantTemplate      TenantTemplate @relation(fields: [tenantTemplateId], references: [id])
+}
+
+// ============================
+// DESIGNS
+// ============================
+
+model Design {
+  id                String         @id @default(cuid())
+  tenantTemplateId  String
+  zonePlacements    Json           @default("[]")
+  renderConfig      Json           @default("{}")
+  status            DesignStatus   @default(DRAFT)
+  guestEmail        String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tenantTemplate    TenantTemplate @relation(fields: [tenantTemplateId], references: [id])
+  order             Order?
+}
+
+// ============================
+// ORDERS
+// ============================
+
+model Order {
+  id              String      @id @default(cuid())
+  designId        String      @unique
+  entityId        String
+  orderNumber     String      @unique
+  status          OrderStatus @default(SUBMITTED)
+  customerName    String
+  customerEmail   String
+  pdfUrl          String?
+  notificationLog Json        @default("[]")
+  submittedAt     DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  design          Design           @relation(fields: [designId], references: [id])
+  entity          GovernmentEntity @relation(fields: [entityId], references: [id])
+  auditLogs       AuditLog[]
+}
+
+// ============================
+// AUDIT LOG
+// ============================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  orderId   String?
+  action    String
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+  order     Order?   @relation(fields: [orderId], references: [id])
+}
+
+// ============================
+// ENUMS
+// ============================
+
+enum UserRole {
+  SUPER_ADMIN
+  ENTITY_ADMIN
+}
+
+enum FulfillmentMode {
+  INTERNAL
+  EXTERNAL
+  HYBRID
+}
+
+enum DesignStatus {
+  DRAFT
+  FINAL
+}
+
+enum OrderStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  COMPLETED
+}
