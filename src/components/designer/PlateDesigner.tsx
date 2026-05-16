@@ -55,6 +55,8 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
     formData.append('entitySlug', tenant.slug)
     formData.append('customerName', customerName)
     formData.append('customerEmail', customerEmail)
+    formData.append('cityName', tenant.name)
+    formData.append('plateText', mainValue)
     const placements = template.textZones.map((z) => ({ zoneId: z.id, value: zoneValues[z.id] ?? '' }))
     formData.append('zonePlacements', JSON.stringify(placements))
     await submitPlateOrder(formData)
@@ -72,7 +74,6 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
         .pd-plate-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; }
       `}</style>
 
-      {/* SVG PLATE — uses viewBox so it scales on all screen sizes */}
       <div className='pd-svg-wrap'>
         <svg viewBox={'0 0 ' + template.width + ' ' + template.height} style={{ borderColor: borderColor }}>
           <rect x={0} y={0} width={template.width} height={template.height} fill={bgColor} />
@@ -92,7 +93,6 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
         </svg>
       </div>
 
-      {/* CUSTOMIZE INPUTS */}
       <div className='pd-card'>
         <h3 style={{ margin: '0 0 1rem', color: '#111', fontSize: '1rem' }}>Customize Your Plate</h3>
         {template.textZones.map((zone) => {
@@ -117,7 +117,6 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
         })}
       </div>
 
-      {/* SUBMIT FLOW */}
       {!showForm ? (
         <button disabled={!canSubmit} onClick={() => setShowForm(true)} style={{ width: '100%', padding: '1rem', backgroundColor: canSubmit ? tenant.primaryColor : '#9ca3af', color: tenant.secondaryColor, border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: canSubmit ? 'pointer' : 'not-allowed', transition: 'background-color 0.15s' }}>Continue to Submit</button>
       ) : (

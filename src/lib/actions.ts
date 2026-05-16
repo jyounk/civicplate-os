@@ -1,7 +1,7 @@
 'use server'
-
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
+import { sendOrderConfirmationEmail } from '@/lib/emails'
 
 function generateOrderNumber(entitySlug: string): string {
   const year = new Date().getFullYear()
@@ -17,6 +17,8 @@ export async function submitPlateOrder(formData: FormData) {
   const customerName = formData.get('customerName') as string
   const customerEmail = formData.get('customerEmail') as string
   const zonePlacementsRaw = formData.get('zonePlacements') as string
+  const cityName = formData.get('cityName') as string
+  const plateText = formData.get('plateText') as string
 
   if (!tenantTemplateId || !entityId || !customerName || !customerEmail) {
     throw new Error('Missing required fields')
@@ -56,6 +58,17 @@ export async function submitPlateOrder(formData: FormData) {
       ],
     },
   })
+
+  try {
+    await sendOrderConfirmationEmail({
+      to: customerEmail,
+      orderId: order.orderNumber,
+      plateText: plateText || 'your plate',
+      cityName: cityName || 'your city',
+    })
+  } catch (err) {
+    console.error('Confirmation email failed:', err)
+  }
 
   redirect('/' + entitySlug + '/confirmation/' + order.orderNumber)
 }
