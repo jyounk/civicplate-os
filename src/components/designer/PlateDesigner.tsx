@@ -68,8 +68,8 @@ export default function PlateDesigner({ template, ruleSets, tenant }: Props) {
         .pd-svg-wrap svg { width: 100%; max-width: 540px; height: auto; border-radius: 12px; border: 6px solid; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
         .pd-card { background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid #e5e7eb; margin-bottom: 1.25rem; }
         .pd-submit-row { display: flex; gap: 0.75rem; }
-        .pd-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box; }
-        .pd-plate-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; }
+        .pd-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box; color: #1a202c; }
+        .pd-plate-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; }
       `}</style>
 
       {/* SVG PLATE — uses viewBox so it scales on all screen sizes */}
