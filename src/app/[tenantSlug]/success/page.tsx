@@ -24,13 +24,11 @@ export default async function SuccessPage({ params, searchParams }: Props) {
   const tenant = await getTenantBySlug(tenantSlug)
   if (!tenant) redirect('/' + tenantSlug)
 
-  // Check if order already exists for this session (prevents duplicates on refresh)
   const existing = await prisma.order.findFirst({
     where: { stripeSessionId: session_id },
   })
   if (existing) redirect('/' + tenantSlug + '/confirmation/' + existing.orderNumber)
 
-  // Verify payment with Stripe
   let session
   try {
     session = await stripe.checkout.sessions.retrieve(session_id)
@@ -40,7 +38,6 @@ export default async function SuccessPage({ params, searchParams }: Props) {
 
   if (session.payment_status !== 'paid') redirect('/' + tenantSlug)
 
-  // Extract metadata saved when checkout session was created
   const meta = session.metadata as {
     tenantSlug: string
     customerName: string
@@ -49,8 +46,8 @@ export default async function SuccessPage({ params, searchParams }: Props) {
   }
 
   const designData = JSON.parse(meta.designData)
+  const amountPaid = session.amount_total ?? 0
 
-  // Save design
   const design = await prisma.design.create({
     data: {
       tenantTemplateId: designData.tenantTemplateId,
@@ -61,7 +58,6 @@ export default async function SuccessPage({ params, searchParams }: Props) {
     },
   })
 
-  // Generate unique order number
   let orderNumber = generateOrderNumber(tenantSlug)
   let attempts = 0
   while (attempts < 5) {
@@ -71,7 +67,6 @@ export default async function SuccessPage({ params, searchParams }: Props) {
     attempts++
   }
 
-  // Save order
   const order = await prisma.order.create({
     data: {
       designId: design.id,
@@ -81,13 +76,13 @@ export default async function SuccessPage({ params, searchParams }: Props) {
       customerName: meta.customerName,
       customerEmail: meta.customerEmail,
       stripeSessionId: session_id,
+      amountPaid,
       notificationLog: [
         { type: 'payment', message: 'Payment confirmed via Stripe', timestamp: new Date().toISOString() }
       ],
     },
   })
 
-  // Send confirmation email
   try {
     await sendOrderConfirmationEmail({
       to: meta.customerEmail,

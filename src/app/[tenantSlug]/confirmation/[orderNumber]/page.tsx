@@ -22,6 +22,7 @@ export default async function ConfirmationPage({ params }: Props) {
   const backHref = '/' + tenantSlug
   const plateText = mainText || 'ABC 123'
   const plateTextUpper = plateText.toUpperCase()
+  const amountDisplay = order.amountPaid ? '$' + (order.amountPaid / 100).toFixed(2) : null
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f4f6f9', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <style>{`
@@ -33,18 +34,16 @@ export default async function ConfirmationPage({ params }: Props) {
         }
       `}</style>
 
-      {/* HERO */}
       <div className='cf-hero' style={{ backgroundColor: primary }}>
         <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: secondary, margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke={primary} strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'><polyline points='20 6 9 17 4 12'/></svg>
         </div>
-        <h1 style={{ margin: '0 0 0.4rem', fontSize: '1.6rem', fontWeight: '700', color: secondary }}>Request Submitted!</h1>
+        <h1 style={{ margin: '0 0 0.4rem', fontSize: '1.6rem', fontWeight: '700', color: secondary }}>Payment Received!</h1>
         <p style={{ margin: 0, color: secondary, opacity: 0.75, fontSize: '0.9rem' }}>{tenantName} License Plate Portal</p>
       </div>
 
       <div className='cf-body'>
 
-        {/* PLATE PREVIEW */}
         <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e6ea', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'center' }}>
           <div style={{ width: '100%', maxWidth: '260px', aspectRatio: '2/1', backgroundColor: '#ffffff', border: '4px solid ' + primary, borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#cbd5e0', position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -54,7 +53,6 @@ export default async function ConfirmationPage({ params }: Props) {
           </div>
         </div>
 
-        {/* ORDER DETAILS */}
         <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e6ea', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.25rem' }}>
           <p style={{ margin: '0 0 1rem', fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a0aec0' }}>Order Details</p>
           <div style={{ display: 'grid', gap: '0' }}>
@@ -78,6 +76,12 @@ export default async function ConfirmationPage({ params }: Props) {
               <span style={{ fontSize: '0.875rem', color: '#718096', flexShrink: 0 }}>Email</span>
               <span style={{ fontSize: '0.8rem', color: '#1a202c', textAlign: 'right', wordBreak: 'break-all' }}>{order.customerEmail}</span>
             </div>
+            {amountDisplay && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0', borderBottom: '1px solid #f1f5f9', gap: '1rem' }}>
+                <span style={{ fontSize: '0.875rem', color: '#718096', flexShrink: 0 }}>Amount paid</span>
+                <strong style={{ fontSize: '0.95rem', color: '#1a202c' }}>{amountDisplay}</strong>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0', gap: '1rem' }}>
               <span style={{ fontSize: '0.875rem', color: '#718096', flexShrink: 0 }}>Status</span>
               <span style={{ backgroundColor: '#fef9c3', color: '#854d0e', padding: '0.2rem 0.75rem', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.04em' }}>SUBMITTED</span>
@@ -85,7 +89,6 @@ export default async function ConfirmationPage({ params }: Props) {
           </div>
         </div>
 
-        {/* WHAT HAPPENS NEXT */}
         <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e6ea', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.25rem' }}>
           <p style={{ margin: '0 0 1.25rem', fontSize: '0.72rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#a0aec0' }}>What happens next</p>
           <div style={{ display: 'flex', gap: '1rem', paddingBottom: '1.25rem' }}>
@@ -96,8 +99,8 @@ export default async function ConfirmationPage({ params }: Props) {
               <div style={{ width: '1px', flex: 1, backgroundColor: '#e2e6ea', marginTop: '6px' }} />
             </div>
             <div style={{ paddingTop: '4px', paddingBottom: '1rem' }}>
-              <p style={{ margin: '0 0 0.2rem', fontWeight: '600', fontSize: '0.9rem', color: '#1a202c' }}>Request received</p>
-              <p style={{ margin: 0, fontSize: '0.82rem', color: '#718096' }}>Your order has been logged and assigned number {order.orderNumber}</p>
+              <p style={{ margin: '0 0 0.2rem', fontWeight: '600', fontSize: '0.9rem', color: '#1a202c' }}>Payment confirmed</p>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#718096' }}>Your payment has been received and your order logged as {order.orderNumber}</p>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '1rem', paddingBottom: '1.25rem' }}>
@@ -119,7 +122,6 @@ export default async function ConfirmationPage({ params }: Props) {
           </div>
         </div>
 
-        {/* BACK BUTTON */}
         <a href={backHref} style={{ display: 'block', textAlign: 'center', backgroundColor: primary, color: secondary, padding: '0.9rem', borderRadius: '8px', fontWeight: '600', textDecoration: 'none', fontSize: '0.95rem' }}>Back to Portal</a>
         <div style={{ height: '2rem' }} />
       </div>

@@ -133,6 +133,7 @@ model Order {
   customerName    String
   customerEmail   String
   stripeSessionId String?
+  amountPaid      Int?
   pdfUrl          String?
   notificationLog Json        @default("[]")
   submittedAt     DateTime    @default(now())
