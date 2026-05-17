@@ -8,19 +8,17 @@ import { sendOrderStatusEmail } from '@/lib/emails'
 
 export async function updateOrderStatus(formData: FormData) {
   const orderId = formData.get('orderId') as string
-  const status = formData.get('status') as 'APPROVED' | 'REJECTED'
+  const status = formData.get('status') as 'IN_REVIEW' | 'APPROVED' | 'REJECTED'
   const tenantSlug = formData.get('tenantSlug') as string
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
   const adapter = new PrismaPg(pool)
   const prisma = new PrismaClient({ adapter })
-
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
       design: { include: { tenantTemplate: { include: { entity: true } } } },
     },
   })
-
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id: orderId },
@@ -33,8 +31,8 @@ export async function updateOrderStatus(formData: FormData) {
       },
     })
   })
-
-  if (order) {
+  const emailStatuses = ['APPROVED', 'REJECTED']
+  if (order && emailStatuses.includes(status)) {
     const plateText = (order.design.zonePlacements as any[]).find((z: any) => z.zoneId === 'main-text')?.value || 'your plate'
     const cityName = order.design.tenantTemplate.entity.name
     try {
@@ -49,7 +47,6 @@ export async function updateOrderStatus(formData: FormData) {
       console.error('Status email failed:', err)
     }
   }
-
   revalidatePath('/admin/' + tenantSlug + '/orders/' + orderId)
   revalidatePath('/admin/' + tenantSlug)
   redirect('/admin/' + tenantSlug + '/orders/' + orderId + '?updated=1')
