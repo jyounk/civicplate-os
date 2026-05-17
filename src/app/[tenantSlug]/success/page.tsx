@@ -77,6 +77,7 @@ export default async function SuccessPage({ params, searchParams }: Props) {
       customerEmail: meta.customerEmail,
       stripeSessionId: session_id,
       amountPaid,
+      plateText: (designData.plateText || '').toUpperCase().trim(),
       notificationLog: [
         { type: 'payment', message: 'Payment confirmed via Stripe', timestamp: new Date().toISOString() }
       ],

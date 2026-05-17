@@ -135,6 +135,7 @@ model Order {
   stripeSessionId String?
   amountPaid      Int?
   pdfUrl          String?
+  plateText       String?
   notificationLog Json        @default("[]")
   submittedAt     DateTime    @default(now())
   updatedAt       DateTime    @updatedAt

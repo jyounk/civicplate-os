@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { validatePlateText, RuleSet, ValidationResult } from './rules'
 import GeorgiaPlate from './GeorgiaPlate'
 
@@ -33,19 +33,49 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
   const [error, setError] = useState<string | null>(null)
   const [customerName, setCustomerName] = useState('')
   const [customerEmail, setCustomerEmail] = useState('')
+  const [plateAvailable, setPlateAvailable] = useState<boolean | null>(null)
+  const [checkingPlate, setCheckingPlate] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const priceInCents = Math.round(price * 100)
   const priceLabel = '$' + price.toFixed(2)
+
   const handleChange = useCallback((zoneId: string, value: string) => {
     const upper = value.toUpperCase()
     setZoneValues((prev) => ({ ...prev, [zoneId]: upper }))
     const result = validatePlateText(upper, ruleSets)
     setValidations((prev) => ({ ...prev, [zoneId]: result }))
+    if (zoneId === 'main-text') {
+      setPlateAvailable(null)
+      setCheckingPlate(false)
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+      if (upper.length > 0) {
+        setCheckingPlate(true)
+        debounceRef.current = setTimeout(async () => {
+          try {
+            const res = await fetch('/api/check-plate?text=' + encodeURIComponent(upper))
+            const data = await res.json()
+            setPlateAvailable(data.available)
+          } catch {
+            setPlateAvailable(true)
+          } finally {
+            setCheckingPlate(false)
+          }
+        }, 500)
+      }
+    }
   }, [ruleSets])
+
+  useEffect(() => {
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [])
+
   const mainZone = template.textZones.find((z) => z.id === 'main-text')
   const mainValidation = mainZone ? validations[mainZone.id] : null
   const isValid = !mainValidation || mainValidation.valid
   const mainValue = mainZone ? zoneValues[mainZone.id] ?? '' : ''
   const ruleSet = ruleSets[0]
+
   const handleSubmit = async () => {
     if (!customerName || !customerEmail) return
     setSubmitting(true)
@@ -82,10 +112,12 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
       setSubmitting(false)
     }
   }
-  const canSubmit = isValid && mainValue.length > 0
+
+  const canSubmit = isValid && mainValue.length > 0 && plateAvailable === true
   const canSend = !!customerName && !!customerEmail && !submitting
   const payLabel = submitting ? 'Redirecting to payment...' : 'Pay Now — ' + priceLabel
   const countyName = tenant.name
+
   return (
     <div style={{ marginTop: '1rem' }}>
       <style>{`
@@ -105,6 +137,7 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
         {template.textZones.map((zone) => {
           const validation = validations[zone.id]
           const value = zoneValues[zone.id] ?? ''
+          const isMain = zone.id === 'main-text'
           const borderCol = validation ? (validation.valid ? '#22c55e' : '#ef4444') : '#d1d5db'
           return (
             <div key={zone.id} style={{ marginBottom: '1rem' }}>
@@ -118,7 +151,10 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
                   {validation.errors.map((err, i) => <li key={i} style={{ color: '#ef4444', fontSize: '0.8rem' }}>{err}</li>)}
                 </ul>
               )}
-              {validation && validation.valid && <p style={{ margin: '0.4rem 0 0', color: '#22c55e', fontSize: '0.8rem' }}>Looks good!</p>}
+              {validation && validation.valid && !isMain && <p style={{ margin: '0.4rem 0 0', color: '#22c55e', fontSize: '0.8rem' }}>Looks good!</p>}
+              {isMain && checkingPlate && <p style={{ margin: '0.4rem 0 0', color: '#6b7280', fontSize: '0.8rem' }}>Checking availability...</p>}
+              {isMain && !checkingPlate && plateAvailable === true && validation && validation.valid && <p style={{ margin: '0.4rem 0 0', color: '#22c55e', fontSize: '0.8rem', fontWeight: 'bold' }}>✓ Available!</p>}
+              {isMain && !checkingPlate && plateAvailable === false && <p style={{ margin: '0.4rem 0 0', color: '#ef4444', fontSize: '0.8rem', fontWeight: 'bold' }}>✗ Already taken — please choose a different plate text.</p>}
             </div>
           )
         })}
