@@ -126,6 +126,8 @@ export default function PlateDesigner({ template, ruleSets, tenant, price }: Pro
         .pd-submit-row { display: flex; gap: 0.75rem; }
         .pd-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #d1d5db; border-radius: 8px; outline: none; box-sizing: border-box; color: #1a202c; }
         .pd-ple-input { width: 100%; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; }
+        .pd-plate-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border-radius: 8px; outline: none; box-sizing: border-box; text-transform: uppercase; color: #1a202c; background: #ffffff; font-family: Arial Black, Arial, sans-serif; letter-spacing: 0.08em; }
+        .pd-plate-input::placeholder { font-family: system-ui, -apple-system, sans-serif; font-weight: 400; letter-spacing: normal; text-transform: none; color: #9ca3af; }
       `}</style>
 
       <div className='pd-svg-wrap'>
