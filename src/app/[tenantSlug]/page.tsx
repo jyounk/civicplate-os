@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation'
 import { getTenantBySlug } from '@/lib/tenant'
 
-type Props = { params: Promise<{ tenantSlug: string }> }
+type Props = { params: Promise<{ tenantSlug: string }>; searchParams: Promise<{ plate_taken?: string }> }
 
-export default async function TenantHomePage({ params }: Props) {
+export default async function TenantHomePage({ params, searchParams }: Props) {
   const { tenantSlug } = await params
+  const sp = await searchParams
+  const plateTaken = sp.plate_taken === '1'
   const tenant = await getTenantBySlug(tenantSlug)
   if (!tenant) { notFound() }
   const primary = tenant.primaryColor
@@ -47,6 +49,15 @@ export default async function TenantHomePage({ params }: Props) {
         }
       `}</style>
 
+      {plateTaken && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderBottom: '1px solid #fecaca', padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+          <div>
+            <p style={{ margin: '0 0 2px', fontWeight: '700', color: '#dc2626', fontSize: '0.95rem' }}>Plate text already taken</p>
+            <p style={{ margin: 0, color: '#ef4444', fontSize: '0.825rem' }}>Someone else secured that plate while you were checking out. Please choose a different plate text and try again. Contact your city office regarding a refund.</p>
+          </div>
+        </div>
+      )}
       <div className='cp-hero' style={{ background: heroBg }}>
         <div className='cp-hero-inner'>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: '100px', padding: '6px 14px', marginBottom: '1.25rem' }}>
