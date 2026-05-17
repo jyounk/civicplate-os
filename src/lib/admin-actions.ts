@@ -9,6 +9,7 @@ import { sendOrderStatusEmail } from '@/lib/emails'
 export async function updateOrderStatus(formData: FormData) {
   const orderId = formData.get('orderId') as string
   const status = formData.get('status') as 'IN_REVIEW' | 'APPROVED' | 'REJECTED'
+  type EmailStatus = 'APPROVED' | 'REJECTED'
   const tenantSlug = formData.get('tenantSlug') as string
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
   const adapter = new PrismaPg(pool)
@@ -41,7 +42,7 @@ export async function updateOrderStatus(formData: FormData) {
         orderId: order.orderNumber,
         plateText,
         cityName,
-        status,
+        status: status as EmailStatus,
       })
     } catch (err) {
       console.error('Status email failed:', err)
