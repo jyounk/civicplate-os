@@ -116,7 +116,7 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
                     <span style={{ fontSize: '0.6rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em', color: done ? step.color : '#94a3b8', marginTop: '0.3rem', whiteSpace: 'nowrap' }}>{step.label}</span>
                   </div>
                   {idx < STATUS_ORDER.length - 1 && (
-                    <div style={{ flex: 1, height: '2px', background: lineBg, rgin: '0 0.25rem', marginBottom: '1.2rem' }} />
+                    <div style={{ flex: 1, height: '2px', background: lineBg, margin: '0 0.25rem', marginBottom: '1.2rem' }} />
                   )}
                 </div>
               )
