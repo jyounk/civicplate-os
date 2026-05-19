@@ -62,6 +62,8 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
   const tmpl = order.design.tenantTemplate.baseTemplate
   const plateW = tmpl?.width ?? 600
   const plateH = tmpl?.height ?? 300
+  const renderConfig = (order.design.renderConfig ?? {}) as Record<string, string>
+  const scene = (renderConfig.scene as 'peach' | 'mountain' | 'coast') || 'peach'
   const canMarkReview = order.status === 'SUBMITTED'
   const canApprove = ['SUBMITTED', 'IN_REVIEW'].includes(order.status)
   const canReject = ['SUBMITTED', 'IN_REVIEW', 'APPROVED'].includes(order.status)
@@ -130,7 +132,7 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
         <div className='od-card'>
           <p className='od-label'>Plate Preview</p>
           <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '1rem', display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-            <GeorgiaPlate plateText={plateText} countyName={countyName} width={plateW} height={plateH} />
+            <GeorgiaPlate plateText={plateText} countyName={countyName} width={plateW} height={plateH} scene={scene} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#475569', marginBottom: '0.5rem' }}>
             <span>Template</span><span style={{ fontWeight: '600', color: '#0f172a' }}>{order.design.tenantTemplate.name}</span>

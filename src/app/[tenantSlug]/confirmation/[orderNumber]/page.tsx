@@ -21,6 +21,8 @@ export default async function ConfirmationPage({ params }: Props) {
   const plateText = mainText || 'ABC 123'
   const plateTextUpper = plateText.toUpperCase()
   const amountDisplay = order.amountPaid ? '$' + (order.amountPaid / 100).toFixed(2) : null
+  const renderConfig = (order.design.renderConfig ?? {}) as Record<string, string>
+  const scene = (renderConfig.scene as 'peach' | 'mountain' | 'coast') || 'peach'
   const slug = tenant.slug
 
   return (
@@ -67,7 +69,7 @@ export default async function ConfirmationPage({ params }: Props) {
         {/* Plate preview card */}
         <div className="cf-card" style={{ display: 'flex', justifyContent: 'center' }}>
           <div style={{ width: '100%', maxWidth: '300px' }}>
-            <GeorgiaPlate plateText={plateTextUpper} countyName={tenantName} width={600} height={300} />
+            <GeorgiaPlate plateText={plateTextUpper} countyName={tenantName} width={600} height={300} scene={scene} />
           </div>
         </div>
 
