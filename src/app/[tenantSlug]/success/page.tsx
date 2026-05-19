@@ -11,5 +11,5 @@ export default async function SuccessPage({ params, searchParams }: Props) {
   const tenant = await getTenantBySlug(tenantSlug)
   if (!tenant) redirect('/' + tenantSlug)
 
-  return <SuccessPoller sessionId={session_id} tenantSlug={tenantSlug} />
+  return <SuccessPoller sessionId={session_id} tenantSlug={tenantSlug} tenantName={tenant.name} />
 }

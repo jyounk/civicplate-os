@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
     data: {
       tenantTemplateId: designData.tenantTemplateId,
       zonePlacements: designData.zonePlacements,
-      renderConfig: { scale: 1, quality: 'high' },
+      renderConfig: { scale: 1, quality: 'high', scene: designData.scene || 'peach' },
       status: 'FINAL',
       guestEmail: meta.customerEmail,
     },
