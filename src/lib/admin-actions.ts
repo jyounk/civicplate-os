@@ -52,3 +52,20 @@ export async function updateOrderStatus(formData: FormData) {
   revalidatePath('/admin/' + tenantSlug)
   redirect('/admin/' + tenantSlug + '/orders/' + orderId + '?updated=1')
 }
+export async function deleteOrder(formData: FormData) {
+  const orderId = formData.get('orderId') as string
+  const tenantSlug = formData.get('tenantSlug') as string
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const adapter = new PrismaPg(pool)
+  const prisma = new PrismaClient({ adapter })
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { designId: true },
+  })
+  if (!order) redirect('/admin/' + tenantSlug)
+  await prisma.auditLog.deleteMany({ where: { orderId } })
+  await prisma.order.delete({ where: { id: orderId } })
+  await prisma.design.delete({ where: { id: order.designId } })
+  revalidatePath('/admin/' + tenantSlug)
+  redirect('/admin/' + tenantSlug)
+}

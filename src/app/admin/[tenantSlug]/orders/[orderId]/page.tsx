@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import { updateOrderStatus } from '@/lib/admin-actions'
+import DeleteOrderButton from '@/components/admin/DeleteOrderButton'
 import GeorgiaPlate from '@/components/designer/GeorgiaPlate'
 
 const PIPELINE = [
@@ -194,6 +195,7 @@ export default async function OrderDetailPage({ params, searchParams }: Props) {
             <p style={{ color: '#94a3b8', fontSize: '0.875rem', margin: 0 }}>No actions available for this status.</p>
           )}
         </div>
+        <DeleteOrderButton orderId={order.id} orderNumber={order.orderNumber} tenantSlug={tenantSlug} />
       </div>
 
       {auditLogs.length > 0 && (
