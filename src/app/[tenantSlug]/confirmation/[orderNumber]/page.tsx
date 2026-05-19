@@ -122,6 +122,7 @@ export default async function ConfirmationPage({ params }: Props) {
           </div>
         </div>
 
+        <a href={'/' + tenantSlug + '/order-status?q=' + encodeURIComponent(order.orderNumber)} style={{ display: 'block', textAlign: 'center', backgroundColor: '#ffffff', color: primary, border: '1px solid ' + primary, padding: '0.9rem', borderRadius: '8px', fontWeight: '600', textDecoration: 'none', fontSize: '0.95rem', marginBottom: '0.75rem' }}>Check your order status</a>
         <a href={backHref} style={{ display: 'block', textAlign: 'center', backgroundColor: primary, color: secondary, padding: '0.9rem', borderRadius: '8px', fontWeight: '600', textDecoration: 'none', fontSize: '0.95rem' }}>Back to Portal</a>
         <div style={{ height: '2rem' }} />
       </div>
