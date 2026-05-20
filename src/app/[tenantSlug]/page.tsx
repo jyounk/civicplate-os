@@ -141,7 +141,7 @@ export default async function TenantHomePage({ params, searchParams }: Props) {
                         <span style={{ fontSize: '28px', fontWeight: '800', color: '#1d1d1f' }}>${template.price.toFixed(2)}</span>
                         <span style={{ fontSize: '13px', color: '#6e6e73' }}> / plate</span>
                       </div>
-                      <a href={href} style={{ backgroundColor: '#1d6f3b', color: '#ffffff', padding: '0.7rem 1.4rem', borderRadius: '12px', fontWeight: '600', fontSize: '14px', textDecoration: 'none', border: 'none' }}>
+                      <a href={href} style={{ backgroundColor: '#1d6f3b', color: '#ffffff', padding: '0.7rem 1.4rem', borderRadius: '12px', fontWeight: '600', fontSize: '14px', textDecoration: 'none', border: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
                         Customize →
                       </a>
                     </div>
