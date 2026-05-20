@@ -29,7 +29,7 @@ export default async function DesignPage({ params }: Props) {
 
       <nav className="dp-nav">
         <div className="dp-nav-inner">
-          <span style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f' }}>{tenantName}</span>
+          <a href={'/' + tenant.slug} style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f', textDecoration: 'none' }}>{tenantName}</a>
           <a href={'/' + tenant.slug + '/order-status'} style={{ color: '#1d6f3b', fontSize: '14px', textDecoration: 'none' }}>Check order status →</a>
         </div>
       </nav>

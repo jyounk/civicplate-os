@@ -45,7 +45,7 @@ export default async function ConfirmationPage({ params }: Props) {
       {/* NAV */}
       <nav className="cf-nav">
         <div className="cf-nav-inner">
-          <span style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f' }}>{tenantName}</span>
+          <a href={'/' + tenantSlug} style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f', textDecoration: 'none' }}>{tenantName}</a>
           <a href={'/' + slug + '/order-status'} style={{ color: '#1d6f3b', fontSize: '14px', textDecoration: 'none' }}>Check order status →</a>
         </div>
       </nav>

@@ -130,7 +130,7 @@ export default async function OrderStatusPage({ params, searchParams }: Props) {
       {/* NAV */}
       <nav className="os-nav">
         <div className="os-nav-inner">
-          <span style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f' }}>{tenant.name}</span>
+          <a href={'/' + tenantSlug} style={{ fontSize: '15px', fontWeight: '600', color: '#1d1d1f', textDecoration: 'none' }}>{tenant.name}</a>
           <a href={'/' + tenantSlug + '/order-status'} style={{ color: '#1d6f3b', fontSize: '14px', textDecoration: 'none' }}>Check order status →</a>
         </div>
       </nav>
